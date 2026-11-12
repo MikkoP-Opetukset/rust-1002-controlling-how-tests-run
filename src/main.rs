@@ -136,7 +136,10 @@ mod tests {
         healing_from_percent(100, 101);
     }
 
-    // Passing-test output is captured by default. Try:
+    // Passing-test output is captured by default and it is not shown in the
+    // test report. Failing tests will automatically show the output of println!
+    // macros.
+    // Try:
     // cargo test -- --show-output
     // cargo test -- --nocapture
     #[test]
@@ -147,6 +150,9 @@ mod tests {
         // assert_eq!(10, 5);
     }
 
+    // These file operations return `io::Error` if they fail. `Box<dyn Error>`
+    // is a flexible error type that lets `?` propagate them; returning `Err`
+    // fails the test.
     #[test]
     fn save_file_round_trips_aria() -> Result<(), Box<dyn Error>> {
         let path = save_path("aria");
@@ -183,6 +189,9 @@ mod tests {
     // A library, doc tests, and integration tests arrive in the next demo, so
     // their target selectors have nothing to select yet.
 
+    // Long test that we might not want to run every time. Note that ignoring
+    // tests should be done only when there is a valid reason for it. An
+    // ignored test that nobody ever runs is just a comment with extra steps.
     #[test]
     #[ignore = "extended fifty-million-turn rule check"]
     fn extended_fight_keeps_health_in_range() {
@@ -206,7 +215,7 @@ mod tests {
 
     /// Give each test its own file so parallel tests cannot overwrite one
     /// another's data. Replacing these names with one shared path can make
-    /// tests interfere; separate state is preferable to serializing the suite.
+    /// tests interfere. Separate state is preferable to serializing the suite.
     fn save_path(test_name: &str) -> PathBuf {
         std::env::temp_dir().join(format!("rust-1002-{}-{test_name}.txt", std::process::id()))
     }
